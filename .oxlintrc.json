@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": [
+    "./node_modules/@interfere/landmines/configs/recommended.json"
+  ],
+  "ignorePatterns": ["dist/**", "coverage/**", "data/**", "node_modules/**", ".agents/**", ".claude/**"],
+  "rules": {
+    "typescript/no-explicit-any": "error",
+    "no-console": "off"
+  }
+}

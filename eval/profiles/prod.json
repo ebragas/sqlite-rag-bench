@@ -1,0 +1,22 @@
+{
+  "name": "prod",
+  "chunkStrategy": {
+    "shortDocMaxChars": 6000,
+    "chunkTargetChars": 4000,
+    "chunkOverlapChars": 600,
+    "includeHeaderCard": true
+  },
+  "enableEmbeddings": true,
+  "embeddingModel": "gemini-embedding-2",
+  "embeddingDims": 768,
+  "topK": 20,
+  "preSearchEnabled": true,
+  "enabledTools": ["search", "fetch_docs", "filter_metadata", "expand_graph"],
+  "maxAgentTurns": 5,
+  "maxFetchedDocs": 15,
+  "softDeadlineMs": 42000,
+  "routingModel": "gemini-3.8-flash",
+  "synthesisModel": "gemini-3.8-flash",
+  "enableAbstentionGate": false,
+  "enableSecondPassPruner": false
+}

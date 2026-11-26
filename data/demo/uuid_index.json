@@ -1,0 +1,10 @@
+{
+  "dsid_demo_confluence_01": "confluence/architecture/billing-ledger.json",
+  "dsid_demo_slack_02": "slack/release-ops/nimbus-cutover.json",
+  "dsid_demo_jira_03": "jira/platform/OPS-404.json",
+  "dsid_demo_gmail_04": "gmail/procurement/nimbus-sla.json",
+  "dsid_demo_drive_05": "google_drive/policies/leave-policy-v1.json",
+  "dsid_demo_drive_06": "google_drive/policies/leave-policy-v2.json",
+  "dsid_demo_hubspot_07": "hubspot/accounts/acme-enterprise.json",
+  "dsid_demo_hubspot_08": "hubspot/accounts/beta-midmarket.json"
+}

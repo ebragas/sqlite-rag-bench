@@ -1,0 +1,12 @@
+{
+  "dataset_doc_uuid": "dsid_demo_hubspot_08",
+  "title_field_name": "company_name",
+  "content_field_names": [
+    "notes"
+  ],
+  "company_name": "Clearline Logistics",
+  "stage": "qualified",
+  "tier": "midmarket",
+  "owner": "Sam Rivera",
+  "notes": "Qualified midmarket prospect testing batch inference endpoints."
+}

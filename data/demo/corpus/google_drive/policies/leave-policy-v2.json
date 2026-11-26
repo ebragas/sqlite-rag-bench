@@ -1,0 +1,12 @@
+{
+  "dataset_doc_uuid": "dsid_demo_drive_06",
+  "title_field_name": "title",
+  "content_field_names": [
+    "body"
+  ],
+  "title": "Caregiving Leave Policy (2026 Official)",
+  "author": "hr-ops",
+  "status": "final",
+  "updated_at": "2026-01-15T10:00:00Z",
+  "body": "Official policy superseding the 2025 draft: full-time employees receive 6 weeks of paid caregiving leave at 100% base salary for serious family illness."
+}

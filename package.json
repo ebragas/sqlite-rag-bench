@@ -1,0 +1,56 @@
+{
+  "name": "sqlite-rag-bench",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit",
+    "arch": "depcruise src --config .dependency-cruiser.cjs",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "splits": "tsx scripts/generate-splits.ts",
+    "ask": "tsx src/services/ask-cli.ts",
+    "eval": "tsx src/services/eval-cli.ts",
+    "calibrate-judge": "tsx src/services/calibrate-judge-cli.ts",
+    "smoke": "tsx src/services/smoke-cli.ts",
+    "verify:docker": "tsx scripts/verify-docker.ts",
+    "check": "npm run lint && npm run typecheck && npm run arch && npm test",
+    "report": "tsx scripts/generate-eval-report.ts",
+    "reliability": "tsx scripts/compute-reliability.ts",
+    "download:onyx": "tsx scripts/download-onyx-bench.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/openai": "^3.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.0.0",
+    "ai": "^6.0.0",
+    "better-sqlite3": "12.9.0",
+    "typescript": "^5.8.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@interfere/landmines": "latest",
+    "@langfuse/client": "^6.1.1",
+    "@langfuse/otel": "^6.1.1",
+    "@langfuse/tracing": "^6.1.1",
+    "@opentelemetry/api": "~1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.223.2",
+    "@opentelemetry/sdk-node": "^0.223.2",
+    "@vitest/coverage-v8": "^3.0.0",
+    "dependency-cruiser": "^17.0.0",
+    "oxlint": "^1.81.0",
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.9.0": true,
+    "esbuild@0.28.2": true
+  },
+  "license": "MIT",
+  "description": "Local-first SQLite FTS5 + Float32Array hybrid RAG engine, deterministic Link Graph, pass@k/pass^k eval harness, and Langfuse v4 observability benchmarked on MIT EnterpriseRAG-Bench."
+}

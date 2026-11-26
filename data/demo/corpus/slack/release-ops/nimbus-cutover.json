@@ -1,0 +1,22 @@
+{
+  "dataset_doc_uuid": "dsid_demo_slack_02",
+  "title_field_name": "channel",
+  "content_field_names": [
+    "messages"
+  ],
+  "channel": "#release-ops",
+  "status": "active",
+  "created_at": "2026-03-10T14:00:00Z",
+  "messages": [
+    {
+      "user": "priya",
+      "ts": "2026-03-10T14:01:00Z",
+      "text": "Canary deployment for Nimbus gateway completed with zero 5xx errors. Linked to OPS-404."
+    },
+    {
+      "user": "marcus",
+      "ts": "2026-03-10T14:05:00Z",
+      "text": "Cutover window closed at 14:05 UTC after p95 latency stayed at 42ms."
+    }
+  ]
+}
