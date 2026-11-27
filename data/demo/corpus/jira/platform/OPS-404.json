@@ -1,0 +1,14 @@
+{
+  "dataset_doc_uuid": "dsid_demo_jira_03",
+  "title_field_name": "summary",
+  "content_field_names": [
+    "description"
+  ],
+  "key": "OPS-404",
+  "summary": "Rotate Redis cache credentials in staging before Nimbus cutover",
+  "reporter": "alex",
+  "priority": "P2",
+  "status": "Done",
+  "updated_at": "2026-03-01T18:00:00Z",
+  "description": "Rotated staging Redis credentials on 2026-03-01 and verified zero cache miss spikes prior to Nimbus gateway cutover."
+}

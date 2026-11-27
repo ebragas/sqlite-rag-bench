@@ -1,0 +1,12 @@
+{
+  "dataset_doc_uuid": "dsid_demo_hubspot_07",
+  "title_field_name": "company_name",
+  "content_field_names": [
+    "notes"
+  ],
+  "company_name": "Northstar Robotics",
+  "stage": "qualified",
+  "tier": "enterprise",
+  "owner": "Jordan Patel",
+  "notes": "Qualified enterprise prospect evaluating Nimbus gateway with 99.95% SLA requirement."
+}

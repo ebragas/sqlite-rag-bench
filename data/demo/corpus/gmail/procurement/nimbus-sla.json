@@ -1,0 +1,14 @@
+{
+  "dataset_doc_uuid": "dsid_demo_gmail_04",
+  "title_field_name": "subject",
+  "content_field_names": [
+    "body"
+  ],
+  "subject": "Nimbus Gateway Annual SLA Renewal",
+  "sender": "legal@acme-inference.example",
+  "recipients": [
+    "procurement@acme-inference.example"
+  ],
+  "created_at": "2026-01-22T16:15:00Z",
+  "body": "The Nimbus Gateway SLA renewal locks uptime at 99.95% through December 2027 with a 30-day termination notice."
+}

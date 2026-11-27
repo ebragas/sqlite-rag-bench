@@ -1,0 +1,22 @@
+{
+  "name": "l0-fts",
+  "chunkStrategy": {
+    "shortDocMaxChars": 6000,
+    "chunkTargetChars": 4000,
+    "chunkOverlapChars": 600,
+    "includeHeaderCard": true
+  },
+  "enableEmbeddings": false,
+  "embeddingModel": "gemini-embedding-001",
+  "embeddingDims": 768,
+  "topK": 15,
+  "preSearchEnabled": false,
+  "enabledTools": [],
+  "maxAgentTurns": 6,
+  "maxFetchedDocs": 15,
+  "softDeadlineMs": 90000,
+  "routingModel": "gemini-3.5-flash-lite",
+  "synthesisModel": "gemini-3.8-flash",
+  "enableAbstentionGate": false,
+  "enableSecondPassPruner": false
+}

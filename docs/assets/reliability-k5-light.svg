@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 508" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="reliability-k5-light-title reliability-k5-light-desc" id="reliability-k5-light-root">
+      <title id="reliability-k5-light-title">Hard-slice reliability curves: pass@k versus pass^k across 5 trials</title>
+      <desc id="reliability-k5-light-desc">Line chart on a 0 to 100% scale across k = 1 through k = 5 trials on 20 hard Onyx questions (100 runs at temperature 0). Strict pass@k rises from 90% to 100%, Safety pass^k holds at 95% down to 90% with zero invalid citations, focal Strict pass^k holds at 90% down to 80%, and Perfect pass^k holds at 34% down to 30%.</desc>
+
+      <!-- Clean paper ground -->
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #reliability-k5-light-root { --color-paper:  #fafaf7;
+      --color-ink:    #1e2124;
+      --color-muted:  #5c6066;
+      --color-accent: #2b5945;
+      --font-sans:    'Geist', system-ui, sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace; }
+      #reliability-k5-light-root { font-family: var(--font-sans); color: var(--color-ink); }</style>
+  </defs>
+      <rect width="100%" height="100%" fill="#fafaf7"/>
+
+      <!-- Top eyebrow inside canvas -->
+      <text x="80" y="28" fill="#545960" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">HARD-SLICE CONSISTENCY · 20 HARD QUESTIONS × 5 TRIALS (100 RUNS) · TEMP 0 · MEAN 88.1% (± 0.98%)</text>
+
+      <!-- Y-axis rotated label -->
+      <text transform="rotate(-90 24 228)" x="24" y="228" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em" text-anchor="middle">PASS RATE (%)</text>
+
+      <!-- Horizontal gridlines -->
+      <line x1="80" y1="336" x2="840" y2="336" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="80" y1="264" x2="840" y2="264" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="80" y1="192" x2="840" y2="192" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="80" y1="120" x2="840" y2="120" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="80" y1="48" x2="840" y2="48" stroke="#1e2124" stroke-opacity="0.06" stroke-width="0.8"/>
+
+      <!-- Axes -->
+      <line x1="80" y1="48" x2="80" y2="408" stroke="#1e2124" stroke-opacity="0.25" stroke-width="1"/>
+      <line x1="80" y1="408" x2="840" y2="408" stroke="#1e2124" stroke-opacity="0.25" stroke-width="1"/>
+
+      <!-- Y-axis labels -->
+      <text x="72" y="411" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">0%</text>
+      <text x="72" y="339" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">20%</text>
+      <text x="72" y="267" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">40%</text>
+      <text x="72" y="195" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">60%</text>
+      <text x="72" y="123" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">80%</text>
+      <text x="72" y="51" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">100%</text>
+
+      <!-- Non-focal series (drawn first) -->
+      <!-- Perfect pass^k: 34 -> 30 -> 30 -> 30 -> 30 -->
+      <polyline points="120,286 300,300 480,300 660,300 840,300" fill="none" stroke="#5c6066" stroke-width="1.2" stroke-linejoin="round"/>
+      <text x="120" y="276" fill="#5c6066" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">34%</text>
+
+      <!-- Safety pass^k: 95 -> 93 -> 92 -> 91 -> 90 -->
+      <polyline points="120,66 300,73 480,77 660,80 840,84" fill="none" stroke="#8b634b" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round"/>
+      <text x="120" y="57" fill="#8b634b" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">95%</text>
+
+      <!-- Strict pass@k: 90 -> 94 -> 96 -> 98 -> 100 -->
+      <polyline points="120,84 300,70 480,62 660,55 840,48" fill="none" stroke="#1a66c9" stroke-width="1.5" stroke-linejoin="round"/>
+
+      <!-- Focal series: Strict pass^k (90 -> 86 -> 84 -> 82 -> 80) -->
+      <polygon points="120,84 300,98 480,106 660,113 840,120 840,408 120,408" fill="#2b5945" fill-opacity="0.07"/>
+      <polyline points="120,84 300,98 480,106 660,113 840,120" fill="none" stroke="#2b5945" stroke-width="2.0" stroke-linejoin="round"/>
+      <circle cx="120" cy="84" r="4.5" fill="#2b5945" stroke="#fafaf7" stroke-width="1.2"/>
+      <circle cx="300" cy="98" r="4.5" fill="#2b5945" stroke="#fafaf7" stroke-width="1.2"/>
+      <circle cx="480" cy="106" r="4.5" fill="#2b5945" stroke="#fafaf7" stroke-width="1.2"/>
+      <circle cx="660" cy="113" r="4.5" fill="#2b5945" stroke="#fafaf7" stroke-width="1.2"/>
+      <circle cx="840" cy="120" r="4.5" fill="#2b5945" stroke="#fafaf7" stroke-width="1.2"/>
+      <rect x="104" y="92" width="32" height="13" rx="2" fill="#fafaf7" fill-opacity="0.92"/>
+      <text x="120" y="102" fill="#2b5945" font-size="8" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">90%</text>
+      <rect x="284" y="104" width="32" height="13" rx="2" fill="#fafaf7" fill-opacity="0.92"/>
+      <text x="300" y="114" fill="#2b5945" font-size="8" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">86%</text>
+      <rect x="464" y="112" width="32" height="13" rx="2" fill="#fafaf7" fill-opacity="0.92"/>
+      <text x="480" y="122" fill="#2b5945" font-size="8" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">84%</text>
+      <rect x="644" y="119" width="32" height="13" rx="2" fill="#fafaf7" fill-opacity="0.92"/>
+      <text x="660" y="129" fill="#2b5945" font-size="8" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">82%</text>
+
+      <!-- Direct end-of-line callouts at k = 5 (zero overlap, 36px+ spacing) -->
+      <text x="852" y="51" fill="#1a66c9" font-size="9" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">100%  Strict pass@k</text>
+      <text x="852" y="87" fill="#8b634b" font-size="9" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">90%   Safety pass^k</text>
+      <text x="852" y="123" fill="#2b5945" font-size="9" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">80%   Strict pass^k</text>
+      <text x="852" y="303" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">30%   Perfect pass^k</text>
+
+      <!-- X-axis labels -->
+      <text x="120" y="432" fill="#1e2124" font-size="10" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">k = 1</text>
+      <text x="300" y="432" fill="#1e2124" font-size="10" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">k = 2</text>
+      <text x="480" y="432" fill="#1e2124" font-size="10" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">k = 3</text>
+      <text x="660" y="432" fill="#1e2124" font-size="10" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">k = 4</text>
+      <text x="840" y="432" fill="#1e2124" font-size="10" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">k = 5</text>
+
+      <!-- Legend strip -->
+      <line x1="36" y1="454" x2="964" y2="454" stroke="#1e2124" stroke-opacity="0.12" stroke-width="0.8"/>
+      <text x="36" y="470" fill="#5c6066" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.16em">LEGEND</text>
+
+      <line x1="36" y1="486" x2="60" y2="486" stroke="#2b5945" stroke-width="2.0"/>
+      <circle cx="48" cy="486" r="4" fill="#2b5945"/>
+      <text x="68" y="490" fill="#5c6066" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Strict pass^k (all k &gt;= 80%)</text>
+
+      <line x1="236" y1="486" x2="260" y2="486" stroke="#1a66c9" stroke-width="1.5"/>
+      <text x="268" y="490" fill="#5c6066" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Strict pass@k (&gt;= 1 of k)</text>
+
+      <line x1="424" y1="486" x2="448" y2="486" stroke="#8b634b" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="456" y="490" fill="#5c6066" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Safety pass^k (0 fab / 0 inv / 0 false abs.)</text>
+
+      <line x1="704" y1="486" x2="728" y2="486" stroke="#5c6066" stroke-width="1.2"/>
+      <text x="736" y="490" fill="#5c6066" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Perfect pass^k (100%)</text>
+
+      <text x="964" y="470" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">UNBIASED COMBINATORIAL ESTIMATOR · 0 / 100 INVALID CITATIONS</text>
+    </svg>

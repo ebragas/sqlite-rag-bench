@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sqlite-rag-bench: EnterpriseRAG-Bench Evaluation Report</title>
+  <style>
+    :root { --bg:#f8fafc; --surface:#ffffff; --ink:#0f172a; --muted:#475569; --border:#e2e8f0; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
+    .wrap { max-width:1120px; margin:0 auto; padding:36px 24px 72px; }
+    header { background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color:#f8fafc; border-radius:14px; padding:32px 36px; margin-bottom:28px; }
+    .eyebrow { text-transform:uppercase; letter-spacing:0.08em; font-size:12px; font-weight:700; color:#38bdf8; margin-bottom:8px; }
+    h1 { margin:0 0 10px; font-size:28px; font-weight:800; }
+    header p { margin:0; color:#cbd5e1; max-width:860px; font-size:15px; }
+    header a { color:#7dd3fc; }
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:28px; }
+    .kpi { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+    .kpi-primary { border-color:#a7f3d0; background:#ecfdf5; }
+    .kpi-label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; }
+    .kpi-val { font-size:26px; font-weight:800; margin:4px 0 2px; }
+    .kpi-primary .kpi-val { color:#047857; }
+    .kpi-sub { font-size:12px; color:var(--muted); }
+    section { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:26px 28px; margin-bottom:24px; }
+    h2 { margin:0 0 6px; font-size:20px; font-weight:750; }
+    .sec-lead { margin:0 0 18px; color:var(--muted); font-size:14px; }
+    .chart-box { border:1px solid var(--border); border-radius:10px; padding:14px 12px 8px; background:#fcfdff; margin-bottom:18px; }
+    .chart-svg { width:100%; height:auto; display:block; }
+    .legend { display:flex; flex-wrap:wrap; gap:18px; font-size:12.5px; color:var(--muted); margin-bottom:10px; padding:0 8px; }
+    .swatch { display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th,td { padding:9px 10px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+    th { font-size:11.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); background:#f8fafc; white-space:nowrap; }
+    .num { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:12px; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-weight:700; font-size:12px; }
+    .pill-green { background:#dcfce7; color:#166534; }
+    .pill-blue { background:#dbeafe; color:#1e40af; }
+    .pill-amber { background:#fef3c7; color:#92400e; }
+    .tag { display:inline-block; background:#f1f5f9; color:#334155; padding:2px 7px; border-radius:6px; font-size:11.5px; font-weight:600; white-space:nowrap; }
+    .delta-pos { color:#059669; font-weight:700; }
+    .delta-neg { color:#dc2626; font-weight:700; }
+    .delta-flat { color:#64748b; }
+    .q-text { font-weight:600; margin-bottom:3px; }
+    .q-meta { font-size:12px; color:var(--muted); }
+    .filter-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .filter-btn { border:1px solid var(--border); background:var(--surface); color:var(--ink); padding:6px 11px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; }
+    .filter-btn.active { background:#0f172a; color:#ffffff; border-color:#0f172a; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+    .card { border:1px solid var(--border); border-radius:10px; padding:18px 20px; background:#fcfdff; }
+    .card-accent { border-color:#a7f3d0; background:#f0fdf4; }
+    .card-kicker { font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; color:var(--muted); margin-bottom:6px; }
+    .metric-big { font-size:21px; font-weight:800; margin-bottom:8px; }
+    .muted { color:var(--muted); font-size:13.5px; }
+    footer { text-align:center; color:var(--muted); font-size:12.5px; margin-top:28px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">sqlite-rag-bench &middot; MIT Open Benchmark Report</div>
+      <h1>Full 500-Question Onyx EnterpriseRAG-Bench Evaluation</h1>
+      <p>
+        Single-file SQLite (FTS5 + <code>Float32Array</code> vectors + deterministic Link Graph) benchmarked across all
+        <strong>500 public MIT-licensed questions</strong> from
+        <a href="https://github.com/onyx-dot-app/EnterpriseRAG-Bench">onyx-dot-app/EnterpriseRAG-Bench</a>, judged by <code>gemini-4-neon</code>
+        with strict Onyx contradiction zeroing and live Langfuse v4 OpenTelemetry tracing.
+      </p>
+    </header>
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-primary">
+        <div class="kpi-label">500-Question Composite</div>
+        <div class="kpi-val">88.0%</div>
+        <div class="kpi-sub">Answer 88.0% &middot; Citation 88.1%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gain vs. L0 Baseline (100q)</div>
+        <div class="kpi-val">+4.0%</div>
+        <div class="kpi-sub">83.0% prod vs. 78.9% L0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Abstention Safety</div>
+        <div class="kpi-val">76.7%</div>
+        <div class="kpi-sub">4.5% false abstention rate</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Invalid Citations</div>
+        <div class="kpi-val">0</div>
+        <div class="kpi-sub">Across all 500 questions</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Latency (p50 / p95)</div>
+        <div class="kpi-val">61.3 s</div>
+        <div class="kpi-sub">p95 (p50: 26.5 s)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Benchmark Spend</div>
+        <div class="kpi-val">$45.72</div>
+        <div class="kpi-sub">Resp $33.83 &middot; Judge $11.88</div>
+      </div>
+    </div>
+
+    <section>
+      <h2>1. Results Across All 10 Official Onyx Categories (500 Questions)</h2>
+      <p class="sec-lead">Evaluated on all 500 official MIT-licensed Onyx EnterpriseRAG-Bench questions over a 21,612-document multi-source slice (all 9 enterprise sources, 38,774 chunks, 100% expected-document coverage).</p>
+      <div class="chart-box"><svg viewBox="0 0 820 334" class="chart-svg" role="img" aria-label="Composite score across all 10 Onyx EnterpriseRAG-Bench categories"><text x="175" y="33" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">basic (175)</text>
+      <rect x="185" y="20" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="20" width="543.7" height="18" rx="4" fill="#059669" />
+      <text x="736.7" y="33" font-size="11.5" font-weight="700" fill="#0f172a">96.6%</text>
+<text x="175" y="63" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">semantic (125)</text>
+      <rect x="185" y="50" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="50" width="441.4" height="18" rx="4" fill="#d97706" />
+      <text x="634.4" y="63" font-size="11.5" font-weight="700" fill="#0f172a">78.4%</text>
+<text x="175" y="93" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">intra_document_reasoning (40)</text>
+      <rect x="185" y="80" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="80" width="548.2" height="18" rx="4" fill="#059669" />
+      <text x="741.2" y="93" font-size="11.5" font-weight="700" fill="#0f172a">97.4%</text>
+<text x="175" y="123" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">project_related (40)</text>
+      <rect x="185" y="110" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="110" width="440.9" height="18" rx="4" fill="#d97706" />
+      <text x="633.9" y="123" font-size="11.5" font-weight="700" fill="#0f172a">78.3%</text>
+<text x="175" y="153" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">constrained (30)</text>
+      <rect x="185" y="140" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="140" width="541.8" height="18" rx="4" fill="#059669" />
+      <text x="734.8" y="153" font-size="11.5" font-weight="700" fill="#0f172a">96.2%</text>
+<text x="175" y="183" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">completeness (20)</text>
+      <rect x="185" y="170" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="170" width="382.0" height="18" rx="4" fill="#d97706" />
+      <text x="575.0" y="183" font-size="11.5" font-weight="700" fill="#0f172a">67.8%</text>
+<text x="175" y="213" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">conflicting_info (20)</text>
+      <rect x="185" y="200" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="200" width="493.9" height="18" rx="4" fill="#2563eb" />
+      <text x="686.9" y="213" font-size="11.5" font-weight="700" fill="#0f172a">87.7%</text>
+<text x="175" y="243" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">info_not_found (20)</text>
+      <rect x="185" y="230" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="230" width="563.0" height="18" rx="4" fill="#059669" />
+      <text x="756.0" y="243" font-size="11.5" font-weight="700" fill="#0f172a">100.0%</text>
+<text x="175" y="273" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">miscellaneous (20)</text>
+      <rect x="185" y="260" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="260" width="558.2" height="18" rx="4" fill="#059669" />
+      <text x="751.2" y="273" font-size="11.5" font-weight="700" fill="#0f172a">99.2%</text>
+<text x="175" y="303" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">high_level (10)</text>
+      <rect x="185" y="290" width="563" height="18" rx="4" fill="#f1f5f9" />
+      <rect x="185" y="290" width="168.9" height="18" rx="4" fill="#d97706" />
+      <text x="361.9" y="303" font-size="11.5" font-weight="700" fill="#0f172a">30.0%</text></svg></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Onyx Category</th>
+              <th class="num">Questions</th>
+              <th class="num">Composite</th>
+              <th class="num">Answer</th>
+              <th class="num">Citation F1</th>
+              <th class="num">Fabrications</th>
+              <th class="num">False Abs.</th>
+              <th class="num">Invalid Cit.</th>
+            </tr>
+          </thead>
+          <tbody><tr>
+      <td><strong>basic</strong></td>
+      <td class="num">175</td>
+      <td class="num"><strong>96.6%</strong></td>
+      <td class="num">96.7%</td>
+      <td class="num">96.2%</td>
+      <td class="num">3</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>semantic</strong></td>
+      <td class="num">125</td>
+      <td class="num"><strong>78.4%</strong></td>
+      <td class="num">78.2%</td>
+      <td class="num">78.8%</td>
+      <td class="num">9</td>
+      <td class="num">16</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>intra_document_reasoning</strong></td>
+      <td class="num">40</td>
+      <td class="num"><strong>97.4%</strong></td>
+      <td class="num">97.7%</td>
+      <td class="num">96.7%</td>
+      <td class="num">0</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>project_related</strong></td>
+      <td class="num">40</td>
+      <td class="num"><strong>78.3%</strong></td>
+      <td class="num">75.1%</td>
+      <td class="num">85.8%</td>
+      <td class="num">3</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>constrained</strong></td>
+      <td class="num">30</td>
+      <td class="num"><strong>96.2%</strong></td>
+      <td class="num">95.8%</td>
+      <td class="num">97.3%</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>completeness</strong></td>
+      <td class="num">20</td>
+      <td class="num"><strong>67.8%</strong></td>
+      <td class="num">68.5%</td>
+      <td class="num">66.2%</td>
+      <td class="num">1</td>
+      <td class="num">4</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>conflicting_info</strong></td>
+      <td class="num">20</td>
+      <td class="num"><strong>87.7%</strong></td>
+      <td class="num">91.8%</td>
+      <td class="num">78.3%</td>
+      <td class="num">1</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>info_not_found</strong></td>
+      <td class="num">20</td>
+      <td class="num"><strong>100.0%</strong></td>
+      <td class="num">100.0%</td>
+      <td class="num">100.0%</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>miscellaneous</strong></td>
+      <td class="num">20</td>
+      <td class="num"><strong>99.2%</strong></td>
+      <td class="num">99.5%</td>
+      <td class="num">98.3%</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr>
+<tr>
+      <td><strong>high_level</strong></td>
+      <td class="num">10</td>
+      <td class="num"><strong>30.0%</strong></td>
+      <td class="num">30.0%</td>
+      <td class="num">30.0%</td>
+      <td class="num">7</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+    </tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Paired Baseline Ablation: Single-Pass FTS5 (<code>l0-fts</code>) vs. <code>prod</code> (100 Stratified Questions)</h2>
+      <p class="sec-lead">
+        10 questions per official Onyx category evaluated on both <code>l0-fts</code> (single-pass keyword search) and <code>prod</code>
+        (hybrid FTS5 + <code>gemini-embedding-2</code> + Link Graph + Turn 0 pre-search + <code>temperature: 0</code>).
+      </p>
+      <div class="chart-box">
+        <div class="legend">
+          <span><span class="swatch" style="background:#f59e0b"></span>L0 Single-Pass FTS5 (78.9%, 7.5% false abstention)</span>
+          <span><span class="swatch" style="background:#059669"></span>Promoted prod (83.0%, 3.8% false abstention)</span>
+        </div>
+        <svg viewBox="0 0 820 270" class="chart-svg" role="img" aria-label="Paired L0 versus prod Composite Score across 10 Onyx categories"><line x1="48" y1="202.0" x2="802" y2="202.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="40" y="206.0" text-anchor="end" font-size="11" fill="#64748b">0%</text>
+<line x1="48" y1="158.0" x2="802" y2="158.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="40" y="162.0" text-anchor="end" font-size="11" fill="#64748b">25%</text>
+<line x1="48" y1="114.0" x2="802" y2="114.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="40" y="118.0" text-anchor="end" font-size="11" fill="#64748b">50%</text>
+<line x1="48" y1="70.0" x2="802" y2="70.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="40" y="74.0" text-anchor="end" font-size="11" fill="#64748b">75%</text>
+<line x1="48" y1="26.0" x2="802" y2="26.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="40" y="30.0" text-anchor="end" font-size="11" fill="#64748b">100%</text><rect x="59.7" y="96.4" width="24.0" height="105.6" rx="3" fill="#f59e0b" />
+      <rect x="87.7" y="65.3" width="24.0" height="136.7" rx="3" fill="#059669" />
+      <text x="85.7" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 85.7 224)">semantic</text>
+<rect x="135.1" y="71.1" width="24.0" height="130.9" rx="3" fill="#f59e0b" />
+      <rect x="163.1" y="51.0" width="24.0" height="151.0" rx="3" fill="#059669" />
+      <text x="161.1" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 161.1 224)">project_related</text>
+<rect x="210.5" y="166.8" width="24.0" height="35.2" rx="3" fill="#f59e0b" />
+      <rect x="238.5" y="149.2" width="24.0" height="52.8" rx="3" fill="#059669" />
+      <text x="236.5" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 236.5 224)">high_level</text>
+<rect x="285.9" y="46.9" width="24.0" height="155.1" rx="3" fill="#f59e0b" />
+      <rect x="313.9" y="40.0" width="24.0" height="162.0" rx="3" fill="#059669" />
+      <text x="311.9" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 311.9 224)">constrained</text>
+<rect x="361.3" y="96.4" width="24.0" height="105.6" rx="3" fill="#f59e0b" />
+      <rect x="389.3" y="89.9" width="24.0" height="112.1" rx="3" fill="#059669" />
+      <text x="387.3" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 387.3 224)">completeness</text>
+<rect x="436.7" y="31.3" width="24.0" height="170.7" rx="3" fill="#f59e0b" />
+      <rect x="464.7" y="31.3" width="24.0" height="170.7" rx="3" fill="#059669" />
+      <text x="462.7" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 462.7 224)">intra_doc</text>
+<rect x="512.1" y="26.0" width="24.0" height="176.0" rx="3" fill="#f59e0b" />
+      <rect x="540.1" y="26.0" width="24.0" height="176.0" rx="3" fill="#059669" />
+      <text x="538.1" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 538.1 224)">miscellaneous</text>
+<rect x="587.5" y="26.0" width="24.0" height="176.0" rx="3" fill="#f59e0b" />
+      <rect x="615.5" y="26.0" width="24.0" height="176.0" rx="3" fill="#059669" />
+      <text x="613.5" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 613.5 224)">info_not_found</text>
+<rect x="662.9" y="26.0" width="24.0" height="176.0" rx="3" fill="#f59e0b" />
+      <rect x="690.9" y="27.8" width="24.0" height="174.2" rx="3" fill="#059669" />
+      <text x="688.9" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 688.9 224)">basic</text>
+<rect x="738.3" y="43.9" width="24.0" height="158.1" rx="3" fill="#f59e0b" />
+      <rect x="766.3" y="53.2" width="24.0" height="148.8" rx="3" fill="#059669" />
+      <text x="764.3" y="224" text-anchor="end" font-size="10.5" fill="#334155" transform="rotate(-28 764.3 224)">conflict</text></svg>
+      </div>
+
+      <div class="filter-bar" id="paired-filters">
+        <button class="filter-btn active" data-filter="all">All (100)</button>
+        <button class="filter-btn" data-filter="wins">Biggest Wins (&ge; +25%)</button>
+        <button class="filter-btn" data-filter="misses">Misses (&lt; 80%)</button>
+        <button class="filter-btn" data-filter="basic">basic</button><button class="filter-btn" data-filter="completeness">completeness</button><button class="filter-btn" data-filter="conflicting_info">conflicting_info</button><button class="filter-btn" data-filter="constrained">constrained</button><button class="filter-btn" data-filter="high_level">high_level</button><button class="filter-btn" data-filter="info_not_found">info_not_found</button><button class="filter-btn" data-filter="intra_document_reasoning">intra_document_reasoning</button><button class="filter-btn" data-filter="miscellaneous">miscellaneous</button><button class="filter-btn" data-filter="project_related">project_related</button><button class="filter-btn" data-filter="semantic">semantic</button>
+      </div>
+      <div class="table-wrap">
+        <table id="paired-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Public Onyx Question &amp; Judge Reasoning</th>
+              <th class="num">prod</th>
+              <th class="num">L0</th>
+              <th class="num">Delta</th>
+              <th class="num">Citation F1</th>
+              <th class="num">Latency</th>
+            </tr>
+          </thead>
+          <tbody><tr data-cat="basic" data-delta="-0.100" data-score="0.900">
+        <td class="mono">qst_0001</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">What are the default size limits for file uploads and total request size for the new multipart upload support on the OpenAI-compatible API endpoints?</div>
+          <div class="q-meta">The responder accurately covers both required facts: the default per-file upload limit of 10 MiB (max_file_size) and the default total request size limit of 50 MiB (max_total_request_size). </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-neg">-10.0%</td>
+        <td class="num">66.7% (2/1)</td>
+        <td class="num">38.9 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0002</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">What is the name of the new metric added so SRE can track when server-side streaming sessions get finalized due to hitting the time limit?</div>
+          <div class="q-meta">The Responder accurately covered both required facts: the metric name stream.timebox_finalized and its labels for route and model. There are no missing facts, contradictions, or fabrications</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">19.3 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0003</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">What are the acceptance criteria for the project introducing an algorithm to generate interactive UI color states and a Kappa-style elevation scale for dense table and grid components?</div>
+          <div class="q-meta">The responder accurately covers all 6 required acceptance criteria facts: the stable design JSON token spec with base palette, interactive derivatives, and elevation.kappa.0-6 shadow paramet</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">19.9 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0004</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">In the meeting about onboarding a SaaS product to Google Cloud Marketplace, what did the GCP team recommend for handling delays where a new subscription entitlement is not immediately available during the customer onboarding flow?</div>
+          <div class="q-meta">The Responder accurately covers all six required facts: acknowledging entitlement propagation delays, handling pending states gracefully, avoiding alarming &#39;not entitled&#39; errors, informing u</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">20.8 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0005</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">What failover sequence and recovery targets did MedThink specify for handling an EU region outage, including any limits on how long traffic can shift to the US?</div>
+          <div class="q-meta">The Responder accurately covered all four required answer_facts: the failover hierarchy (EU primary to EU warm standby to US emergency failover), the 15-minute RPO for active datasets, the 3</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">20.5 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0006</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">In the draft spec about extending a routing policy engine for automated regional failover, what is the proposed priority order for evaluating different failure signals when deciding whether to shift traffic or fail over?</div>
+          <div class="q-meta">The responder accurately covers all 6 required answer_facts in the exact canonical v1 priority order, including the signals, actions, conditions, and rationales. Minor additional parenthetic</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">17.8 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0007</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">In a rolling investigation of a model regression on policy-related prompts after a recent deploy, what was the average triage rubric score change between the older baseline build and the newer optimized build in the first comparison run?</div>
+          <div class="q-meta">The Responder accurately covered all three required answer facts: the older baseline build averaged 2.7, the newer optimized build averaged 1.9, and the score decreased by 0.8 points in the </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">15.5 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0008</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">In the internal shiproom runner notes, what is the target time-to-recover threshold for a verified rollback in staging?</div>
+          <div class="q-meta">The Responder accurately covered the sole required fact that a verified rollback in staging requires a time-to-recover under 10 minutes, with no contradictions or fabrications.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">12.3 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0009</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">In the EdgePath evaluation email thread, what alternative Year 1 pricing package did Redwood propose instead of matching the competitor&#39;s 50 percent first-year discount and migration credit?</div>
+          <div class="q-meta">The responder accurately covers all 5 required facts: declining the 50% discount and $60k credit, proposing a 12-month committed prepay package with ~40% off list on prepay buckets, a $50,00</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">23.6 s</td>
+      </tr>
+<tr data-cat="basic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0010</td>
+        <td><span class="tag">basic</span></td>
+        <td>
+          <div class="q-text">How does the new alerting approach group model-serving requests by the stages they pass through to reduce noisy alerts and speed up root cause analysis?</div>
+          <div class="q-meta">The responder accurately covers all 5 required answer facts: the lightweight token_stage_cohort service computing a deterministic cohort key, the specific stage-level signals (token counts p</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">22.5 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0176</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">When does booking open for the new top end 80GB accelerator on dedicated clusters in the EU Central and India South locations?</div>
+          <div class="q-meta">Covered facts 2 and 3 by accurately identifying dedicated clusters in EU Central (eu-central-1) and India South (ap-south-1), as well as the NVIDIA H200 80GB (h200-80) accelerator and 09:00 </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (1/1)</td>
+        <td class="num">32.6 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0177</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">What were the final concession terms approved for the retail partner purchase through the major cloud providers marketplace, specifically the first year price reduction and the referral payout schedule after launch?</div>
+          <div class="q-meta">The responder accurately covers all three required answer facts: the 30% discount off list price for the first 12 months, the 15% revenue-share payout for the first two quarters after go-liv</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">29.5 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="1.000" data-score="1.000">
+        <td class="mono">qst_0178</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">In the recent change that made low bit math safer for inference, what is the default pass rate used to decide when a machine is allowed to step down from the safest numeric mode?</div>
+          <div class="q-meta">The Responder accurately covers both required facts: stating the default pass-rate threshold is 0.92 (92%) and explaining that it represents the fraction of microbenchmark runs that must pas</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-pos">+100.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">18.7 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0179</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">What caused an enterprise tenant in Western Europe to suddenly get routed to a Southeast Asia edge during a short mid March 2026 load spike on the vectorization service, adding about 200ms and triggering ingestion timeouts, even though the tenant was supposed to stay in Europe?</div>
+          <div class="q-meta">The responder accurately covers all 7 required facts: control-plane heartbeat lag under high concurrent embedding load, delayed residency-stamp refresh causing it to be treated as stale, EU-</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">42.9 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="-0.231" data-score="0.769">
+        <td class="mono">qst_0180</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">In our rollout system, what is the name of the new mechanism that prevents a candidate release from getting full user traffic until a dry run with replayed requests and smoke checks has passed?</div>
+          <div class="q-meta">Covered facts 1 and 3 by naming TrafficEscrow and describing how it holds routing decisions under a commit escrow lease until a rehearse dry run with replayed requests and smoke checks passe</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">76.9%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-neg">-23.1%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">22.6 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="1.000" data-score="1.000">
+        <td class="mono">qst_0181</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">During a large overnight upload run using short lived credentials refreshed by many transient workers, what client side scheduling change was recommended to stop periodic too many requests errors after a partial worker restart caused refresh bursts?</div>
+          <div class="q-meta">The responder accurately covers all four required facts: staggering credential refreshes by adding randomized jitter to the refresh schedule, specifying the 30-120 second jitter range, stagg</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-pos">+100.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">34.3 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0182</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">During a failover between two active locations, what is the default time window where a short-lived resume credential is accepted on the destination before doing full authentication again?</div>
+          <div class="q-meta">The Responder accurately covers both required facts: the default token-grace window during failover is 45 seconds, and during this window a valid resume token is accepted on the destination </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">24.9 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0183</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">What are the specific gate thresholds used to automatically decide whether a compressed model variant is allowed, canaried, or blocked, including the limits for chat similarity drop, code pass rate change, retrieval embedding quality, and acceptable latency and cost changes?</div>
+          <div class="q-meta">The Responder accurately covered all six required answer facts, including exact thresholds for chat similarity, code pass rate and compile failure, retrieval embeddings, latency and cost cha</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">35.9 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0184</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">When is the 60 to 90 minute technical deep dive scheduled with the healthcare client about running model serving inside their own isolated network, and what is the time window in Pacific time?</div>
+          <div class="q-meta">The Responder covered 0 of 2 required facts and contradicted both. It incorrectly stated the date as September 19, 2028 instead of Tuesday, October 24, 2028, and stated the time window as 10</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (1/1)</td>
+        <td class="num">48.9 s</td>
+      </tr>
+<tr data-cat="semantic" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0185</td>
+        <td><span class="tag">semantic</span></td>
+        <td>
+          <div class="q-text">What was the recommended way to split a year long commitment for about eight high end inference accelerators across North America, Europe, and Southeast Asia while keeping a small extra pool for short spikes?</div>
+          <div class="q-meta">The Responder accurately covered all four required facts: 40% in us-east (North America), 40% in eu-west (Europe), 20% in ap-southeast (Southeast Asia), and an additional 10% global burst po</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">30.0 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0301</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">During the 2025-02-10 capacity incident, what two thresholds should trigger noisy-tenant detection in the runbook update, and how long were SLA targets breached?</div>
+          <div class="q-meta">The Responder accurately covered all three required facts: eviction rate exceeding 0.5%, 99.9th-percentile latency increasing more than 2x over baseline, and SLA targets being breached for a</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">25.8 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0302</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">For the 90-day AcmeSec eval, what do they need to send to get Splunk HEC audit log exports wired up, and which internal team members are responsible for wiring the export and sending the pricing quote?</div>
+          <div class="q-meta">The Responder accurately covered all three required facts: AcmeSec needs to provide their Splunk HEC endpoint and token, Sam (Solutions) is responsible for wiring the export, and Kevin (Sale</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">17.1 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0303</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">Which teams are required to sign off on the dedicated capacity intake rubric, and what two follow-up dependencies were noted for the next steps work?</div>
+          <div class="q-meta">The responder accurately covers all three required answer facts, correctly naming all five sign-off teams (Solutions, Sales, Runtime Eng, Capacity Ops, and Security) and both follow-up depen</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">34.1 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0304</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">For the PayRight Redwood DPA negotiation, what incident notification timeframe did PayRight request at the start and what notification window did Redwood propose in the final tracked wording before sending the DocuSign link?</div>
+          <div class="q-meta">The responder accurately covers all three required answer facts: PayRight&#39;s initial request for a 24-hour notification timeframe, Redwood&#39;s final proposed 48-hour notification window, and im</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">26.3 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="0.769">
+        <td class="mono">qst_0305</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">When using the python async batching helper for embeddings then rerank, what singleton-wrapped rerank response shape can show up during auth refresh, and what redwood.utils normalizer did the sampleapp add to fix the output shape?</div>
+          <div class="q-meta">The Responder accurately covers two of the three required facts: it identifies the singleton-wrapped dictionary shape {&quot;result&quot;: {&quot;scores&quot;: [...], &quot;meta&quot;: {...}}} returned during auth refres</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">76.9%</span></td>
+        <td class="num">76.9%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">32.4 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0306</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">During the us-west-2 incident with TLS handshake failures on edge.redwood.ai, what alert triggered the PagerDuty page and what two preventative follow-ups were planned before closing the thread?</div>
+          <div class="q-meta">The Responder accurately covers all three required answer facts: the triggering PagerDuty alert (LB target group TLS handshake failure rate &gt; 60% for redwood-edge-prod in us-west-2), the pla</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">23.0 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="0.930">
+        <td class="mono">qst_0307</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">For the StrataCore joint benchmark on the S100 card, what model and metrics are they benchmarking, and what artifacts will be included in the post run internal results bundle for signoff?</div>
+          <div class="q-meta">The Responder accurately covers the rdx-13b model, the perf/W and throughput metrics, and the post-run signoff bundle items (telemetry, CSVs, and BIOS snapshots), only omitting the specific </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">93.0%</span></td>
+        <td class="num">93.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">22.9 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0308</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">For the Praxis Health Redwood Private connectivity plan, what hybrid approach did Redwood recommend for a customer with both on-prem colo and AWS us-west-2, and when was the proposed 30-minute follow-up call scheduled?</div>
+          <div class="q-meta">All four required facts are accurately covered: AWS PrivateLink for control plane and inference access, a peered ingress VPC in the Praxis AWS account for sustained low-latency/high-throughp</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">30.2 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0309</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">After the docs deploy failed due to mkdocs linkcheck reporting broken anchor fragments from an include refactor, what final deploy-bot status was reported once prod was updated?</div>
+          <div class="q-meta">The Responder accurately covers all three required facts: after production was updated, deploy-bot reported a final status of success, with linkcheck warnings only, and no broken fragments. </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">15.6 s</td>
+      </tr>
+<tr data-cat="intra_document_reasoning" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0310</td>
+        <td><span class="tag">intra_document_reasoning</span></td>
+        <td>
+          <div class="q-text">In the on-prem cutover readiness weekly sync meeting, who attended, and what two checkpoint meetings (with dates) were scheduled around the staging soak test?</div>
+          <div class="q-meta">The Responder accurately covered both required answer facts: all six attendees with their respective organizations (Redwood and Aurelia Systems) and both scheduled checkpoint meetings with e</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">23.1 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.205" data-score="0.860">
+        <td class="mono">qst_0341</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">For the Proxima Bank 429 spike after priority routing rollout, what caused the throttling and what temporary policy exception did we apply, and how do we verify it is not burning the enterprise route SLOs?</div>
+          <div class="q-meta">The Responder accurately covers the root cause (us-east regional pressure with elevated scheduler lag/queue depth triggering overload protection/admission control on bursty Proxima chat and </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">86.0%</span></td>
+        <td class="num">65.5%</td>
+        <td class="num delta-pos">+20.5%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">55.4 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.512" data-score="0.887">
+        <td class="mono">qst_0342</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">Our Key Management Standard says we must not cache plaintext DEKs, but ADR-007 allows a short-lived in-memory DEK cache. What is the actual policy we should follow, and how should we describe DEK caching and KMS outage behavior in customer-facing rotation materials?</div>
+          <div class="q-meta">The responder accurately covers 9 of the 10 required answer facts, detailing the Key Management Standard prohibition on persistent/long-lived plaintext DEK caching, ADR-007&#39;s bounded in-proc</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">88.7%</span></td>
+        <td class="num">37.5%</td>
+        <td class="num delta-pos">+51.2%</td>
+        <td class="num">85.7% (3/4)</td>
+        <td class="num">55.6 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.000" data-score="0.807">
+        <td class="mono">qst_0343</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">What caused the savings $/day estimates in Optimization Suggestions beta to not match Arkadia Finance billing, and what UI or API changes should we make to prevent this confusion going forward?</div>
+          <div class="q-meta">The responder accurately covers 12 of the 16 required facts completely (facts 2-8, 10-11, 13, 15-16), including the compute-cost vs. net invoice basis, credits/committed-use discounts, local</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">80.7%</span></td>
+        <td class="num">80.7%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">80.0% (2/3)</td>
+        <td class="num">40.2 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="-0.008" data-score="0.887">
+        <td class="mono">qst_0344</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">Do we need to recalculate or annotate Dedicated throughput SLO compliance for streaming-heavy deployments before the streaming double-counting fix, and how should Support handle any credit requests tied to that period?</div>
+          <div class="q-meta">The responder accurately covers almost all required facts: no backfill or recalculation is planned for the pre-PR-19422 period, dashboards and reports spanning the boundary must be annotated</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">88.7%</span></td>
+        <td class="num">89.5%</td>
+        <td class="num delta-flat">-0.8%</td>
+        <td class="num">85.7% (3/4)</td>
+        <td class="num">49.3 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.485" data-score="0.895">
+        <td class="mono">qst_0345</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">For the Trident Financial Private VPC deal, what is our approved stance on US-only data residency and 7-year audit log retention/export, and which evidence pack artifacts should we share (and how) to back it up?</div>
+          <div class="q-meta">The Responder accurately covers 13 to 14 of the 16 required facts, including the US-region commitment for customer content, rejection of absolute no-processing-outside-US/cross-border clause</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">89.5%</span></td>
+        <td class="num">41.0%</td>
+        <td class="num delta-pos">+48.5%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">51.1 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="-0.095" data-score="0.702">
+        <td class="mono">qst_0346</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">After the Northwind latency spike, what metric wording ended up approved for the public case study and what exactly can Sales share privately without triggering new legal approval?</div>
+          <div class="q-meta">The Responder accurately covers 4.5 to 5 of the 7 required facts: range-based metrics (though without explicitly stating the &#39;observed in production&#39; phrasing on the metric wording itself), </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">70.2%</span></td>
+        <td class="num">79.7%</td>
+        <td class="num delta-neg">-9.5%</td>
+        <td class="num">80.0% (2/3)</td>
+        <td class="num">44.9 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.000" data-score="0.825">
+        <td class="mono">qst_0347</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">For an air-gapped on-prem restore into a brand new cluster, what do we need to install before running restore apply, and what will the installer check and report if those prerequisites are missing?</div>
+          <div class="q-meta">Covered facts: (1) installing cert-manager with installCRDs=true, external-secrets, and Redwood control-plane CRDs from the offline bundle before restore apply; (3) hard stop before modifyin</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">82.5%</span></td>
+        <td class="num">82.5%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">28.3 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.043" data-score="0.811">
+        <td class="mono">qst_0348</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">When a tenant has a fallback model configured, which overload conditions will trigger Smart Routing to attempt the fallback versus the gateway returning a terminal 503, and how should Support explain that behavior to customers?</div>
+          <div class="q-meta">The Responder accurately covers 8 of 11 required facts: gateway admission rejection conditions preventing Smart Routing invocation and returning terminal 503 with Retry-After, Smart Routing </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">81.1%</span></td>
+        <td class="num">76.8%</td>
+        <td class="num delta-flat">+4.3%</td>
+        <td class="num">100.0% (4/4)</td>
+        <td class="num">49.7 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.000" data-score="0.965">
+        <td class="mono">qst_0349</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">What caused the EU-West activation funnel and onboarding email issues in late January, and which code/config changes fixed them?</div>
+          <div class="q-meta">The responder accurately covers 8 of the 9 required facts in full and most of the 9th fact, clearly distinguishing the activation funnel measurement artifact (duplicate telemetry and inconsi</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">96.5%</span></td>
+        <td class="num">96.5%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (3/3)</td>
+        <td class="num">51.5 s</td>
+      </tr>
+<tr data-cat="project_related" data-delta="0.000" data-score="0.940">
+        <td class="mono">qst_0350</td>
+        <td><span class="tag">project_related</span></td>
+        <td>
+          <div class="q-text">Why did Northpeak Search see their Dedicated Burst Usage billed higher than expected, and how do we prevent retry attempts from double-counting burst GPU-seconds now?</div>
+          <div class="q-meta">The responder accurately covers all 9 required answer facts, explaining the root cause (double-counting retries on transient 429/overload responses due to regenerated request_id, missing end</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">94.0%</span></td>
+        <td class="num">94.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">80.0% (2/3)</td>
+        <td class="num">36.9 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0381</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In the planned controlled failover game day on 2026-01-15 (Hosted API us-east → eu-west), what caused the routing automation to oscillate (flip/rollback), and what follow-up ticket and target ship date were created to fix the streaming disconnect/reconnect behavior clients saw during cross-region redirects?</div>
+          <div class="q-meta">The Responder accurately covers all required facts: the oscillation was caused by noisy reachability signals triggering a premature recovery/rollback combined with permissive hold-down, anti</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">30.3 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0382</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In the Feb 12, 2026 incident where daily usage exports briefly overstated output tokens (while invoices stayed correct), what was the root cause and what mitigation + follow-up steps were taken to prevent a repeat?</div>
+          <div class="q-meta">The Responder accurately covers all required facts regarding the root cause (deduplication bug in the usage exporter counting retried streaming chunks as distinct completions when request ID</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">24.5 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0383</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In a Private/VPC deployment, some users could complete SAML SSO but then immediately hit 403s because their admin group wasn&#39;t being recognized after an IdP/AD-connector upgrade (early March 2026). What was the underlying parsing problem with the comma-separated &quot;groups&quot; SAML attribute (why the first group didn&#39;t match), and what server-side patch fixed it?</div>
+          <div class="q-meta">The Responder accurately covers all required facts: the upgraded AD connector emitted a leading UTF-8 BOM (EF BB BF / U+FEFF) on the comma-separated groups SAML attribute, causing the first </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">21.8 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="-0.060" data-score="0.240">
+        <td class="mono">qst_0384</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In Runtime 1.22 on Hosted (Shared) pools, we&#39;re seeing burst-time p99 latency spikes that correlate with KV compaction activity. Which two compaction knobs should oncall tune first (and by roughly what amount), and what&#39;s the emergency kill-switch plus the specific counters/metrics to check to confirm the disable took effect?</div>
+          <div class="q-meta">Covered facts: correctly identifies kv.compaction.budget_ms_per_step and kv.compaction.budget_bytes_per_step as the first two knobs to reduce by 25-50%, mentions kv.kill_switch=true, and con</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">24.0%</span></td>
+        <td class="num">30.0%</td>
+        <td class="num delta-neg">-6.0%</td>
+        <td class="num">80.0% (3/2)</td>
+        <td class="num">47.8 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0385</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">What caused the production perf-canary paging storm on 2026-02-12 right after canary coverage was expanded (and paging rules were enabled), and what immediate mitigations/config changes were applied to stop the repeated pages?</div>
+          <div class="q-meta">The responder accurately covers all 10 positive required facts regarding the causes of the 2026-02-12 paging storm (coverage expansion and paging enablement, baseline key label mismatch caus</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">39.2 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0386</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In the Feb 2026 SEV-2 incident where the Dedicated autoscaler in us-west stopped scaling above minimum because its metrics query returned no data, what was the underlying cause and what hotfix restored scale-out?</div>
+          <div class="q-meta">The responder accurately covers all required facts: the PromQL refactor switching label matching from cluster_id to cluster, empty metrics for clusters emitting only cluster_id preventing sc</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">20.9 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0387</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In a private VPC deployment using SSO via our identity-proxy, what caused the intermittent 403 RBAC denials that occurred right after an IdP group membership sync for users who were already logged in (and were fixed by logging out/in), and what mitigation plus long-term server-side fix did we apply?</div>
+          <div class="q-meta">The Responder accurately covers all required facts: root cause (identity-proxy caching role assertions keyed by stable SAML session_index leading to stale roles and 403 RBAC denials for acti</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">27.6 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="0.965">
+        <td class="mono">qst_0388</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">In the March 2026 incident where long-lived Server-Sent Events (SSE) streams would reconnect after a brief upstream TCP reset and then show duplicated heartbeat frames while sometimes never emitting the terminal end-of-stream event, what was the root cause and what server-side fix resolved it?</div>
+          <div class="q-meta">The responder accurately covers the root cause (sse-gateway race interleaving an in-flight terminal flush with scheduled keepalive/heartbeat work after an upstream TCP RST), the PR 2147 fix </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">96.5%</span></td>
+        <td class="num">96.5%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">29.4 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0389</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">After the Console v4.3.2 rollout (March 2026), what caused saved dashboard filter presets to revert to the default right after you edit and save a linked sub-report in the widget editor modal, and what hotfix fixed it?</div>
+          <div class="q-meta">The responder accurately covered all required facts: the Console v4.3.2 frontend regression in the editor modal (PR 4521 with propagateChanges), the post-save handler dispatching a global pr</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">23.8 s</td>
+      </tr>
+<tr data-cat="constrained" data-delta="0.450" data-score="1.000">
+        <td class="mono">qst_0390</td>
+        <td><span class="tag">constrained</span></td>
+        <td>
+          <div class="q-text">During a March 2026 prod us-east-1 dedicated incident where a sudden burst of high-concurrency streaming traffic caused intermittent 502/504s due to proxy ephemeral port pressure, what mitigations were applied (replica changes and any kernel/sysctl tuning) and-per the ingress proxy connection-entropy playbook-what RCA artifacts should be captured while the issue is ongoing?</div>
+          <div class="q-meta">The responder accurately covers all 8 required positive facts: scaling up proxy deployment replicas, sequentially restarting a subset of proxy pods to redistribute ephemeral ports, deploying</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">55.0%</td>
+        <td class="num delta-pos">+45.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">33.0 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0411</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">On Streamly AI&#39;s dedicated pool dp-132-usw, what % of interactive burst credits should be reserved exclusively for priority=high routes?</div>
+          <div class="q-meta">The Responder accurately states that 30% of interactive burst credits should be reserved exclusively for priority=high routes on dedicated pool dp-132-usw, superseding the earlier 20% sugges</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">20.4 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0412</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">For extraction, what price-normalization correctness is reported at temp=0.0 with strict JSON + canonicalization, and what earlier % is it compared to?</div>
+          <div class="q-meta">The responder accurately covers all required facts: it reports ~96% price-normalization correctness at temp=0.0 with strict JSON and canonicalization rules, compares it to the earlier ~89% r</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">14.4 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.895">
+        <td class="mono">qst_0413</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">Who approves terminating STALE-ORPHAN test instances after the 72h grace window-infra manager or cost-ops?</div>
+          <div class="q-meta">The responder accurately states that cost-ops approves termination after the grace window per Priya Desai and mentions that Miguel Reyes asked whether infra manager approval was needed. It a</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">89.5%</span></td>
+        <td class="num">89.5%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/2)</td>
+        <td class="num">19.6 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.070" data-score="0.760">
+        <td class="mono">qst_0414</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">INC-9821: was the degraded GPU node an OOM or intermittent driver/kernel launch stalls?</div>
+          <div class="q-meta">The responder accurately covers facts 1, 2, 4, and 5 by identifying intermittent driver/kernel launch stalls as the cause confirmed by node telemetry review, explicitly stating there was no </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">76.0%</span></td>
+        <td class="num">69.0%</td>
+        <td class="num delta-pos">+7.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">16.8 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0415</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">What must `--deterministic true` enforce in the eval runner (decoding settings)?</div>
+          <div class="q-meta">The responder accurately covers all required facts: do_sample=false, temperature=0.0, top_k=1, top_p=1.0, num_beams=1 with the beam-search suite exception, passing an explicit per-example to</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">21.1 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0416</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">Copperfield Nimbus Dedicated sizing: latest baseline/growth/peak QPS and peak concurrent chat sessions?</div>
+          <div class="q-meta">The responder accurately covers all four required latest metrics: baseline QPS of 60, 6-month growth QPS of 140, peak QPS of 260, and ~150 peak concurrent chat sessions. Earlier numbers are </div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">25.3 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0417</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">What does Redwood Private on-prem recommend for signing backup manifests?</div>
+          <div class="q-meta">The Responder accurately covers all required facts: it states that Sigstore/cosign in offline key mode is the primary recommendation as of Private Toolkit v1.8+, notes that older deployments</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (1/2)</td>
+        <td class="num">23.1 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0418</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">In the SLO→customer impact classifier, what score ranges map to Tiers 1-4 in v2, and what were the previous thresholds?</div>
+          <div class="q-meta">The Responder accurately covered all required facts for both the v2 tier thresholds (Tier 1 &gt;=85, Tier 2 70-84, Tier 3 35-69, Tier 4 &lt;35) and the previous thresholds (Tier 1 &gt;=80, Tier 2 60-</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">20.1 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="0.100" data-score="1.000">
+        <td class="mono">qst_0419</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">What is the API endpoint to start a Unified Capacity Transition migration?</div>
+          <div class="q-meta">The responder accurately identifies POST /v1/capacity/migrations/start as the primary updated endpoint and correctly describes POST /v1/migration/start as a temporary legacy alias behind a f</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-pos">+10.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">23.8 s</td>
+      </tr>
+<tr data-cat="conflicting_info" data-delta="-0.700" data-score="0.300">
+        <td class="mono">qst_0420</td>
+        <td><span class="tag">conflicting_info</span></td>
+        <td>
+          <div class="q-text">For EXP-002 (eu-west→us-east), what egress cost rate and measurement basis does the cost penalty catalog use?</div>
+          <div class="q-meta">The Responder accurately covers 5 of the 7 required facts: the updated GiB-based billing model from provider bills, the +$0.085 per GiB rate, attribution to request traces via sampled bytes </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">30.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-neg">-70.0%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">32.1 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="-0.028" data-score="0.972">
+        <td class="mono">qst_0431</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">What is the procedure for an emergency rollback of a Serving Runtime release (Hosted and Dedicated)?</div>
+          <div class="q-meta">The Responder accurately covers almost all 12 required answer facts, including pausing in-flight progressive rollouts, identifying and re-pinning to a known-good runtime release tag, trigger</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">97.2%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">-2.8%</td>
+        <td class="num">100.0% (2/2)</td>
+        <td class="num">40.4 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0432</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">Which intake channel has the most reports of &quot;token accounting discrepancy&quot;?</div>
+          <div class="q-meta">The Responder abstained by stating there is insufficient evidence in the corpus, missing the required fact that Jira (customer-support SUP tickets) has the most reports of token accounting d</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (0/6)</td>
+        <td class="num">55.5 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.086" data-score="0.944">
+        <td class="mono">qst_0433</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">What is Redwood Inference&#39;s end-to-end process for rotating secrets and credentials used by production services (including emergency rotation)?</div>
+          <div class="q-meta">The responder provides a comprehensive and accurate end-to-end overview covering nearly all required facts, including planned rotation via the Credential Dependencies inventory, both dual-va</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">94.4%</span></td>
+        <td class="num">85.8%</td>
+        <td class="num delta-pos">+8.6%</td>
+        <td class="num">100.0% (6/6)</td>
+        <td class="num">53.1 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0434</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">In Q4 2025, which customer industry segment was featured in the most published customer stories (case studies + one-page success stories)?</div>
+          <div class="q-meta">The Responder accurately covers all 3 required facts: Fintech was the most featured customer industry segment in Q4 2025, appearing in 3 published customer stories consisting of 2 case studi</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (6/6)</td>
+        <td class="num">32.8 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="0.900">
+        <td class="mono">qst_0435</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">How many weekly status updates for Project Orion marked the project as &#39;At Risk&#39;?</div>
+          <div class="q-meta">The Responder accurately covers both required facts: stating that 3 weekly status updates for Project Orion were marked as &#39;At Risk&#39; and correctly identifying the dates as 2026-01-16, 2026-0</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">90.0%</span></td>
+        <td class="num">90.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">66.7% (3/6)</td>
+        <td class="num">31.3 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.147" data-score="0.947">
+        <td class="mono">qst_0436</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">Across Redwood&#39;s Go, Python, and TypeScript SDKs, which SDK has the highest number of customer-reported auth-related bug reports, and what are the corresponding support ticket IDs?</div>
+          <div class="q-meta">The Responder accurately covers all three required answer facts: identifying the Python SDK as having the highest number of auth-related bug reports, stating the count of 2, and providing th</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">94.7%</span></td>
+        <td class="num">80.0%</td>
+        <td class="num delta-pos">+14.7%</td>
+        <td class="num">82.3% (7/10)</td>
+        <td class="num">41.8 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0437</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">Across all incident postmortems, which Redwood team was assigned the most follow-up action items?</div>
+          <div class="q-meta">The Responder abstained on an answerable question and covered 0 of 2 required facts, missing that the Platform team was assigned the most follow-up action items and that they had 16 total ac</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (0/9)</td>
+        <td class="num">36.1 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="0.760">
+        <td class="mono">qst_0438</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">Which Redwood Inference engineering team owned the most production incidents involving GPU capacity or quota exhaustion in H1 2025?</div>
+          <div class="q-meta">The responder accurately covers all three required answer facts: identifying Eng Infra as the team owning the most GPU capacity or quota exhaustion incidents in H1 2025, stating the count of</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">76.0%</span></td>
+        <td class="num">76.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">20.0% (1/9)</td>
+        <td class="num">31.1 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0439</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">How many internal incident writeups at Redwood Inference describe activating automatic fallback (to a different model or region) as part of mitigation?</div>
+          <div class="q-meta">The Responder abstained by claiming the corpus lacked sufficient evidence, covering 0 of the 5 required answer facts (the count of 4 incident writeups and the four specific incident dates: 2</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (0/5)</td>
+        <td class="num">22.8 s</td>
+      </tr>
+<tr data-cat="completeness" data-delta="0.162" data-score="0.846">
+        <td class="mono">qst_0440</td>
+        <td><span class="tag">completeness</span></td>
+        <td>
+          <div class="q-text">What is the complete SOP Redwood Inference must follow to enable &quot;customer-managed audit log export&quot; (to the customer&#39;s cloud storage) across Hosted, Dedicated, and Private deployments-including required prerequisites, security approvals, configuration steps, validation, customer communication, and ongoing operations/ownership?</div>
+          <div class="q-meta">The Responder accurately covers the majority of the end-to-end SOP across Hosted, Dedicated, and Private deployments, including Jira intake fields, entitlement and regional defaults, TLS 1.2</div>
+        </td>
+        <td class="num"><span class="pill pill-blue">84.6%</span></td>
+        <td class="num">68.4%</td>
+        <td class="num delta-pos">+16.2%</td>
+        <td class="num">100.0% (6/6)</td>
+        <td class="num">75.0 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0451</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">In the team chat about posting jokes when an AI makes things up in production, what tagging requirement did someone propose for the memes?</div>
+          <div class="q-meta">The responder accurately covers the required fact that Ava proposed tagging the memes with the model version. Including Ava&#39;s full name (Ava Chen) is benign extra context consistent with the</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">13.9 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0452</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">Who owns the messy go-to-market misc assets dump with placeholder marketing files and micro-copy ideas created during a last-minute scramble before a partner call?</div>
+          <div class="q-meta">The responder accurately covers the single required fact by identifying Priya Nair as the owner of the messy go-to-market misc assets dump. The additional details regarding the document name</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">17.2 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0453</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">Who is responsible for the stock canyon hero placeholder image that is suggested for demo slides, and what is its current status?</div>
+          <div class="q-meta">The responder accurately covers both required facts: Priya Desai is responsible for the hero-placeholder-canyon.jpg stock canyon hero placeholder image, and its current status is needs crop.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">30.4 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0454</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">When is the professional deep cleaning scheduled for the smelly refrigerator in the 4th floor office kitchen?</div>
+          <div class="q-meta">The responder accurately answers the question by stating that the professional vendor deep cleaning for the 4th floor kitchen refrigerator is scheduled for 2025-06-14 (June 14, 2025), coveri</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">18.7 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0455</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">Are sneakers acceptable for the first few weeks of the company summer softball league, or do we need cleats right away?</div>
+          <div class="q-meta">The responder accurately covers both required facts: sneakers are acceptable for the first few weeks, and cleats are optional and not needed right away. There are no contradictions or fabric</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">13.2 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0456</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">What time was the fantasy football mock draft scheduled for, and which time zone was it in?</div>
+          <div class="q-meta">The Responder accurately covered both required facts: the scheduled time of 8:00 PM (noting the equivalent 20:00) and the PST time zone, with no contradictions or fabrications.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">14.7 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0457</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">Do I need approval to add a large planter or wall mounted art in a Redwood office, and what details should I include in the request?</div>
+          <div class="q-meta">The Responder accurately covers all four required facts: approval is needed for floor-standing planters and wall-hung installations over 30 inches in any dimension, requests go to people-ops</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">27.6 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0458</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">How often should facilities water common-area snake plants and ZZ plants in the office?</div>
+          <div class="q-meta">The responder accurately covers both required facts, stating that facilities should water both common-area snake plants and ZZ plants every 4-6 weeks. The inclusion of standard botanical nam</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">19.3 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0459</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">What was the deadline and time zone for paying into the office fantasy football playoff pickem?</div>
+          <div class="q-meta">The Responder accurately covered the single required fact, stating the exact date (March 5, 2026), time (17:00 / 5:00 PM), and time zone (UTC), with no fabricated or contradicting claims.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">20.1 s</td>
+      </tr>
+<tr data-cat="miscellaneous" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0460</td>
+        <td><span class="tag">miscellaneous</span></td>
+        <td>
+          <div class="q-text">In a first round technical interview for a senior sales engineer candidate, what were the agreed next steps after the call?</div>
+          <div class="q-meta">The Responder accurately covers all three required facts: sending Priya Rao a take-home assignment, Priya returning it within 48 hours, and scheduling a subsequent panel interview. The addit</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (1/1)</td>
+        <td class="num">16.8 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0471</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What is Redwood Inference&#39;s mission statement?</div>
+          <div class="q-meta">The question is marked as unanswerable with zero expected documents, requiring the responder to abstain. Instead of abstaining, the responder provided an answer citing other documents with d</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (2/0)</td>
+        <td class="num">20.6 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0472</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What is the company&#39;s thesis about where competitive advantage shifts as LLM ecosystems expand?</div>
+          <div class="q-meta">The question is marked as unanswerable with expected document count 0, so the Responder was required to abstain. Instead, the Responder did not abstain and answered the question citing two d</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (2/0)</td>
+        <td class="num">27.3 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0473</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What security-oriented features are highlighted for Redwood Private deployments?</div>
+          <div class="q-meta">The question is marked as unanswerable with 0 expected documents, so the Responder was required to abstain. Instead, the Responder did not abstain and provided a detailed answer citing 8 doc</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (8/0)</td>
+        <td class="num">51.8 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="1.000" data-score="1.000">
+        <td class="mono">qst_0474</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">Which serving-runtime optimizations are explicitly called out as part of Redwood&#39;s inference engine design?</div>
+          <div class="q-meta">The question is unanswerable with zero expected documents. The Responder cleanly abstained by stating there is insufficient evidence in the provided corpus without fabricating any claims.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-pos">+100.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">53.8 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0475</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What policy dimensions can Redwood&#39;s smart routing use to route requests?</div>
+          <div class="q-meta">The question is marked unanswerable with 0 expected documents, requiring the Responder to abstain. Instead of abstaining, the Responder answered the question by citing documents and listing </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (2/0)</td>
+        <td class="num">32.2 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0476</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What is the stated differentiation around reliability and graceful degradation in Redwood&#39;s platform?</div>
+          <div class="q-meta">The question is unanswerable with zero expected documents in the corpus, so the Responder was required to abstain. Instead, the Responder did not abstain and provided a detailed answer asser</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (5/0)</td>
+        <td class="num">41.6 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0477</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What are the four main revenue streams in Redwood Inference&#39;s business model?</div>
+          <div class="q-meta">The question is unanswerable with zero expected documents, and the Responder cleanly abstained by stating the corpus lacks sufficient evidence without fabricating any claims.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">19.1 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0478</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What add-on categories are mentioned for Redwood&#39;s commercial offering?</div>
+          <div class="q-meta">The question is unanswerable (expected document count is 0), requiring the Responder to abstain. Instead, the Responder did not abstain and provided an unsupported answer listing embeddings </div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (3/0)</td>
+        <td class="num">24.4 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="0.000">
+        <td class="mono">qst_0479</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What triggers Redwood&#39;s expansion from PLG-led adoption to sales-assisted enterprise for Dedicated and Private?</div>
+          <div class="q-meta">The question is marked unanswerable with 0 expected supporting documents, requiring the Responder to abstain. Instead, the Responder failed to abstain and answered the question directly with</div>
+        </td>
+        <td class="num"><span class="pill pill-amber">0.0%</span></td>
+        <td class="num">0.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">0.0% (5/0)</td>
+        <td class="num">37.4 s</td>
+      </tr>
+<tr data-cat="high_level" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0480</td>
+        <td><span class="tag">high_level</span></td>
+        <td>
+          <div class="q-text">What are the major departments listed in the company&#39;s high-level organization?</div>
+          <div class="q-meta">The question is unanswerable with zero expected documents. The Responder cleanly abstained by stating that the provided documents do not contain information about the company&#39;s high-level or</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">20.5 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0481</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">For the hot-route capacity protection rollout in us-east, which specific enterprise accounts were on the initial allowlist, and what were the exact per-route-group budget values (RPS, estimated TPS, and concurrency) configured for each of those accounts?</div>
+          <div class="q-meta">The Responder cleanly abstains by stating that the corpus lacks sufficient evidence to identify the specific enterprise accounts on the initial allowlist or their exact per-route-group budge</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">25.0 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0482</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">What exact queue-depth threshold and prefill/decode interleaving-ratio cutoffs are currently configured in production to allow FP8 attention in **decode** on H100 hosted pools (i.e., the scheduler interaction guardrail mentioned in the FP8/INT8 kernel auto-selection heuristics)?</div>
+          <div class="q-meta">The question is unanswerable given the corpus, and the responder cleanly abstained by stating that the corpus does not contain sufficient evidence without fabricating any claims.</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">41.7 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0483</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">For the admin activity chronicle&#39;s daily Merkle-root anchoring, which public blockchain network do we anchor to and what smart contract address is used, and how should an auditor verify the anchor end-to-end?</div>
+          <div class="q-meta">The Responder cleanly abstained by explicitly stating that the corpus lacks sufficient evidence to identify the public blockchain network, smart contract address, or end-to-end verification </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">37.3 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0484</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">What is the complete mapping of `billing_tag` → Finance GL code (and cost center owner) used for chargebacks in the Eval Budget Ledger, and where is that mapping source-of-truth maintained?</div>
+          <div class="q-meta">The question is unanswerable from the corpus, and the Responder cleanly abstains by explicitly stating that the corpus lacks sufficient evidence for both the complete billing_tag-to-GL mappi</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">29.5 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0485</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">In the CSRL &quot;delayed_with_handover&quot; admission response, what is the exact queue token format (encoding + required fields) and what signing/validation mechanism is used to prevent cross-tenant or cross-region replay?</div>
+          <div class="q-meta">The question is unanswerable with no expected documents. The responder cleanly abstains, stating that the corpus lacks sufficient evidence and does not mention CSRL or the requested admissio</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">26.9 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0486</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">How do we compute and invoice the **per-request CO2e** for Hosted API usage (including the region-specific carbon intensity factors and any cache-hit adjustments), and where is that CO2e exposed in the customer Usage API/export schema?</div>
+          <div class="q-meta">The question is unanswerable from the corpus, and the Responder cleanly abstained by stating that the corpus lacks sufficient evidence to answer any part of the query without fabricating or </div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">26.3 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0487</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">When a streaming resume attempt fails with HTTP 409 (checkpoint mismatch), what is the full JSON schema of the server&#39;s error payload (including any `resume_details` fields), and how is the `kv_crc` value inside v2 resume tokens computed?</div>
+          <div class="q-meta">The question is unanswerable (expected document count is 0). The Responder cleanly abstained by stating that the corpus lacks sufficient evidence to answer both parts of the query, without f</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">19.4 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0488</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">When we use the GPU firmware operator to do a BIOS/firmware rollout, what BIOS settings are included in Redwood&#39;s &quot;safe mode boot&quot; profile for A100/H100 nodes (e.g., Secure Boot, Above 4G decoding, Resizable BAR), and what are the default values for each?</div>
+          <div class="q-meta">The question is unanswerable, and the Responder cleanly abstained by explicitly stating that the corpus lacks sufficient evidence to identify the specific BIOS settings and default values fo</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">36.0 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0489</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">In the `observability-pack` status page component registry, what Slack channel is listed as the ownership contact for the **Hosted API - Streaming (us-east)** component?</div>
+          <div class="q-meta">The question is unanswerable, and the Responder cleanly abstained by explicitly stating that the provided corpus documents lack sufficient evidence to answer the query without fabricating an</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">25.6 s</td>
+      </tr>
+<tr data-cat="info_not_found" data-delta="0.000" data-score="1.000">
+        <td class="mono">qst_0490</td>
+        <td><span class="tag">info_not_found</span></td>
+        <td>
+          <div class="q-text">For enterprise private deployments, what numeric BGP community value(s) correspond to the &quot;redwood-shield&quot; policy, and what are the standard MED/local-preference values we set when failing over from Direct Connect/Interconnect to the VPN during an interconnect flap?</div>
+          <div class="q-meta">The question is unanswerable based on the corpus, and the responder cleanly abstained by stating that the corpus lacks sufficient evidence regarding the redwood-shield policy, its BGP commun</div>
+        </td>
+        <td class="num"><span class="pill pill-green">100.0%</span></td>
+        <td class="num">100.0%</td>
+        <td class="num delta-flat">0.0%</td>
+        <td class="num">100.0% (0/0)</td>
+        <td class="num">25.6 s</td>
+      </tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. Hard-Slice Consistency Benchmark (<code>pass@1..5</code> vs. <code>pass^1..5</code>)</h2>
+      <p class="sec-lead">
+        Evaluated <strong>5 fresh trials</strong> across <strong>20 hard Onyx questions</strong>
+        (5 each from <code>conflicting_info</code>, <code>completeness</code>, <code>project_related</code>, and <code>info_not_found</code>, 100 total runs at <code>temperature: 0</code>).
+      </p>
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="card card-accent">
+          <div class="card-kicker">Mean Composite Across 5 Trials</div>
+          <div class="metric-big">88.1% &plusmn; 0.98%</div>
+          <p class="muted">Trial range: 87.2% to 89.8%</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Strict Pass (&ge; 80%, 0 Fab, 0 Inv)</div>
+          <div class="metric-big">pass@5 100.0% / pass^5 80.0%</div>
+          <p class="muted">pass@1: 90.0% &middot; pass^3: 84.0%</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Safety Across 100 Hard Runs</div>
+          <div class="metric-big">pass^5 90.0%</div>
+          <p class="muted">Fabrications: 1 &middot; Invalid Citations: 0 &middot; False Abstentions: 4</p>
+        </div>
+      </div>
+      <div class="chart-box">
+        <div class="legend">
+          <span><span class="swatch" style="background:#059669"></span>Strict pass@k (capability)</span>
+          <span><span class="swatch" style="background:#7c3aed"></span>Strict pass^k (consistency)</span>
+          <span><span class="swatch" style="background:#0284c7"></span>Safety pass^k (dashed)</span>
+          <span><span class="swatch" style="background:#d97706"></span>Perfect 100% pass^k (dashed)</span>
+        </div>
+        <svg viewBox="0 0 820 270" class="chart-svg" role="img" aria-label="pass@k versus pass^k curves on hard Onyx slice">
+    <line x1="52" y1="228.0" x2="792" y2="228.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="44" y="232.0" text-anchor="end" font-size="11" fill="#64748b">0%</text>
+<line x1="52" y1="177.0" x2="792" y2="177.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="44" y="181.0" text-anchor="end" font-size="11" fill="#64748b">25%</text>
+<line x1="52" y1="126.0" x2="792" y2="126.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="44" y="130.0" text-anchor="end" font-size="11" fill="#64748b">50%</text>
+<line x1="52" y1="75.0" x2="792" y2="75.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="44" y="79.0" text-anchor="end" font-size="11" fill="#64748b">75%</text>
+<line x1="52" y1="24.0" x2="792" y2="24.0" stroke="#e2e8f0" stroke-width="1" />
+      <text x="44" y="28.0" text-anchor="end" font-size="11" fill="#64748b">100%</text><text x="52.0" y="258" text-anchor="middle" font-size="11.5" fill="#334155">k=1</text>
+<text x="237.0" y="258" text-anchor="middle" font-size="11.5" fill="#334155">k=2</text>
+<text x="422.0" y="258" text-anchor="middle" font-size="11.5" fill="#334155">k=3</text>
+<text x="607.0" y="258" text-anchor="middle" font-size="11.5" fill="#334155">k=4</text>
+<text x="792.0" y="258" text-anchor="middle" font-size="11.5" fill="#334155">k=5</text>
+    <polyline fill="none" stroke="#059669" stroke-width="2.75" points="52.0,44.4 237.0,36.2 422.0,32.2 607.0,28.1 792.0,24.0" />
+<circle cx="52.0" cy="44.4" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+        <text x="52.0" y="36.4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">90%</text>
+<circle cx="237.0" cy="36.2" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+        <text x="237.0" y="28.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">94%</text>
+<circle cx="422.0" cy="32.2" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+        <text x="422.0" y="24.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">96%</text>
+<circle cx="607.0" cy="28.1" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+        <text x="607.0" y="20.1" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">98%</text>
+<circle cx="792.0" cy="24.0" r="4.5" fill="#059669" stroke="#ffffff" stroke-width="1.5" />
+        <text x="792.0" y="16.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">100%</text>
+    <polyline fill="none" stroke="#7c3aed" stroke-width="2.75" points="52.0,44.4 237.0,52.6 422.0,56.6 607.0,60.7 792.0,64.8" />
+<circle cx="52.0" cy="44.4" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+        <text x="52.0" y="36.4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">90%</text>
+<circle cx="237.0" cy="52.6" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+        <text x="237.0" y="44.6" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">86%</text>
+<circle cx="422.0" cy="56.6" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+        <text x="422.0" y="48.6" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">84%</text>
+<circle cx="607.0" cy="60.7" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+        <text x="607.0" y="52.7" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">82%</text>
+<circle cx="792.0" cy="64.8" r="4.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5" />
+        <text x="792.0" y="56.8" text-anchor="middle" font-size="10.5" font-weight="700" fill="#7c3aed">80%</text>
+    <polyline fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="5 4" points="52.0,34.2 237.0,38.3 422.0,40.3 607.0,42.4 792.0,44.4" />
+<circle cx="52.0" cy="34.2" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+        <text x="52.0" y="26.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0284c7">95%</text>
+<circle cx="237.0" cy="38.3" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+        <text x="237.0" y="30.3" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0284c7">93%</text>
+<circle cx="422.0" cy="40.3" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+        <text x="422.0" y="32.3" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0284c7">92%</text>
+<circle cx="607.0" cy="42.4" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+        <text x="607.0" y="34.4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0284c7">91%</text>
+<circle cx="792.0" cy="44.4" r="3.5" fill="#0284c7" stroke="#ffffff" stroke-width="1.5" />
+        <text x="792.0" y="36.4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0284c7">90%</text>
+    <polyline fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="5 4" points="52.0,158.6 237.0,166.8 422.0,166.8 607.0,166.8 792.0,166.8" />
+<circle cx="52.0" cy="158.6" r="3.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5" />
+        <text x="52.0" y="150.6" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d97706">34%</text>
+<circle cx="237.0" cy="166.8" r="3.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5" />
+        <text x="237.0" y="158.8" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d97706">30%</text>
+<circle cx="422.0" cy="166.8" r="3.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5" />
+        <text x="422.0" y="158.8" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d97706">30%</text>
+<circle cx="607.0" cy="166.8" r="3.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5" />
+        <text x="607.0" y="158.8" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d97706">30%</text>
+<circle cx="792.0" cy="166.8" r="3.5" fill="#d97706" stroke="#ffffff" stroke-width="1.5" />
+        <text x="792.0" y="158.8" text-anchor="middle" font-size="10.5" font-weight="700" fill="#d97706">30%</text>
+  </svg>
+      </div>
+    </section>
+
+    <footer>
+      sqlite-rag-bench &middot; MIT License &middot; Generated by <code>scripts/generate-eval-report.ts</code> from public MIT-licensed Onyx EnterpriseRAG-Bench runs.
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var bar = document.getElementById("paired-filters");
+      var rows = Array.prototype.slice.call(document.querySelectorAll("#paired-table tbody tr"));
+      if (!bar) return;
+      bar.addEventListener("click", function (ev) {
+        var btn = ev.target.closest("button[data-filter]");
+        if (!btn) return;
+        var mode = btn.getAttribute("data-filter");
+        bar.querySelectorAll(".filter-btn").forEach(function (b) { b.classList.toggle("active", b === btn); });
+        rows.forEach(function (row) {
+          var cat = row.getAttribute("data-cat");
+          var delta = parseFloat(row.getAttribute("data-delta") || "0");
+          var score = parseFloat(row.getAttribute("data-score") || "0");
+          var show = mode === "all" || mode === cat || (mode === "wins" && delta >= 0.25) || (mode === "misses" && score < 0.8);
+          row.style.display = show ? "" : "none";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

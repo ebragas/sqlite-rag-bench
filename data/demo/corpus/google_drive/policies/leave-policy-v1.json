@@ -1,0 +1,12 @@
+{
+  "dataset_doc_uuid": "dsid_demo_drive_05",
+  "title_field_name": "title",
+  "content_field_names": [
+    "body"
+  ],
+  "title": "Caregiving Leave Policy (2025 Draft)",
+  "author": "hr-ops",
+  "status": "draft",
+  "updated_at": "2025-05-01T10:00:00Z",
+  "body": "Draft proposal: employees receive 4 weeks of paid caregiving leave at 80% base salary."
+}
