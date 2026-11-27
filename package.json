@@ -42,7 +42,7 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.223.2",
     "@opentelemetry/sdk-node": "^0.223.2",
     "@vitest/coverage-v8": "^4.1.12",
-    "dependency-cruiser": "^17.0.0",
+    "dependency-cruiser": "^18.9.0",
     "oxlint": "^1.81.0",
     "tsx": "^4.19.0",
     "vitest": "^4.1.12"
