@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+npm ci --omit=dev --no-audit --no-fund
+./node_modules/.bin/tsc -p tsconfig.build.json
+exec node dist/services/server.js

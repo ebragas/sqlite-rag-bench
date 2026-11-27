@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="leaderboard-context-light-title leaderboard-context-light-desc" id="leaderboard-context-light-root">
+      <title id="leaderboard-context-light-title">Benchmark context: sqlite-rag-bench ranked alongside public Onyx EnterpriseRAG-Bench systems</title>
+      <desc id="leaderboard-context-light-desc">Horizontal bar chart on a 0 to 100% scale ranking sqlite-rag-bench prod (88.0% composite, 89.2% on 490 standard-labeled questions over a 21.6K-document slice) alongside seven public Onyx EnterpriseRAG-Bench Leaderboard systems evaluated on the full 511K-document corpus: Intera AI 96.2%, Unblocked 88.5%, Minimal RAG 75.9%, OpenAI File Search 61.0%, BM25 plus GPT-5.4 50.6%, Amazon Q 49.0%, and LlamaIndex default 27.2%.</desc>
+
+      <!-- Clean paper ground -->
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #leaderboard-context-light-root { --color-paper:  #fafaf7;
+      --color-ink:    #1e2124;
+      --color-muted:  #5c6066;
+      --color-accent: #2b5945;
+      --font-sans:    'Geist', system-ui, sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace; }
+      #leaderboard-context-light-root { font-family: var(--font-sans); color: var(--color-ink); }</style>
+  </defs>
+      <rect width="100%" height="100%" fill="#fafaf7"/>
+
+      <!-- Top eyebrow -->
+      <text x="244" y="30" fill="#545960" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">ONYX ENTERPRISERAG-BENCH · 500 OFFICIAL QUESTIONS · ORDERED BY SCORE</text>
+
+      <!-- Vertical gridlines & domain floor -->
+      <line x1="244" y1="48" x2="244" y2="420" stroke="#1e2124" stroke-opacity="0.25" stroke-width="1"/>
+      <line x1="368" y1="56" x2="368" y2="420" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="492" y1="56" x2="492" y2="420" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="616" y1="56" x2="616" y2="420" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="740" y1="56" x2="740" y2="420" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="864" y1="56" x2="864" y2="420" stroke="#1e2124" stroke-opacity="0.08" stroke-width="0.8"/>
+
+      <!-- Bottom axis baseline -->
+      <line x1="244" y1="420" x2="864" y2="420" stroke="#1e2124" stroke-opacity="0.25" stroke-width="1"/>
+
+      <!-- Tick labels & axis title -->
+      <text x="244" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">0%</text>
+      <text x="368" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">20%</text>
+      <text x="492" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">40%</text>
+      <text x="616" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">60%</text>
+      <text x="740" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">80%</text>
+      <text x="864" y="440" fill="#5c6066" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">100%</text>
+      <text x="554" y="460" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em" text-anchor="middle">BENCHMARK SCORE (%) · *21.6K SLICE COMPOSITE VS. 511K OFFICIAL SCORER</text>
+
+      <!-- Ranked bars -->
+      <!-- Intera AI: 96.2% -->
+      <rect x="244" y="64" width="596" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="64" width="596" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="75" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Intera AI</text>
+      <text x="232" y="87" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · COMMERCIAL</text>
+      <text x="850" y="80" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">96.2%</text>
+
+      <!-- Unblocked: 88.5% -->
+      <rect x="244" y="108" width="549" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="108" width="549" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="119" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Unblocked</text>
+      <text x="232" y="131" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · ENTERPRISE SEARCH</text>
+      <text x="803" y="124" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">88.5%</text>
+
+      <!-- sqlite-rag-bench (prod)*: 88% -->
+      <rect x="244" y="152" width="546" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="152" width="546" height="26" rx="3" fill="#2b5945" fill-opacity="0.09" stroke="#2b5945" stroke-width="1.4"/>
+      <text x="232" y="163" fill="#2b5945" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">sqlite-rag-bench (prod)*</text>
+      <text x="232" y="175" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">21.6K SLICE · LOCAL SQLITE</text>
+      <text x="800" y="168" fill="#2b5945" font-size="9" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">88.0% (89.2% std)*</text>
+
+      <!-- Minimal RAG: 75.9% -->
+      <rect x="244" y="196" width="471" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="196" width="471" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="207" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Minimal RAG</text>
+      <text x="232" y="219" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · OPEN-SOURCE RAG</text>
+      <text x="725" y="212" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">75.9%</text>
+
+      <!-- OpenAI File Search: 61% -->
+      <rect x="244" y="240" width="378" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="240" width="378" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="251" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">OpenAI File Search</text>
+      <text x="232" y="263" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · MANAGED VECTOR</text>
+      <text x="632" y="256" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">61.0%</text>
+
+      <!-- BM25 + GPT-5.4: 50.6% -->
+      <rect x="244" y="284" width="314" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="284" width="314" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="295" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">BM25 + GPT-5.4</text>
+      <text x="232" y="307" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · ONE-SHOT LEXICAL</text>
+      <text x="568" y="300" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">50.6%</text>
+
+      <!-- Amazon Q (Kendra): 49% -->
+      <rect x="244" y="328" width="304" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="328" width="304" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="339" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Amazon Q (Kendra)</text>
+      <text x="232" y="351" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · MANAGED CLOUD</text>
+      <text x="558" y="344" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">49.0%</text>
+
+      <!-- LlamaIndex (default): 27.2% -->
+      <rect x="244" y="372" width="169" height="26" rx="3" fill="#fafaf7"/>
+      <rect x="244" y="372" width="169" height="26" rx="3" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="232" y="383" fill="#1e2124" font-size="10.5" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">LlamaIndex (default)</text>
+      <text x="232" y="395" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">511K CORPUS · DEFAULT FRAMEWORK</text>
+      <text x="423" y="388" fill="#5c6066" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">27.2%</text>
+
+      <!-- Legend & methodology strip -->
+      <line x1="36" y1="482" x2="964" y2="482" stroke="#1e2124" stroke-opacity="0.12" stroke-width="0.8"/>
+      <text x="36" y="498" fill="#5c6066" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.16em">LEGEND</text>
+
+      <rect x="36" y="508" width="14" height="10" rx="2" fill="#2b5945" fill-opacity="0.09" stroke="#2b5945" stroke-width="1.4"/>
+      <text x="58" y="517" fill="#5c6066" font-size="9" font-family="'Geist', system-ui, sans-serif">sqlite-rag-bench prod* (21.6K slice · 0.70 Answer + 0.30 Cit. F1)</text>
+
+      <rect x="436" y="508" width="14" height="10" rx="2" fill="#1e2124" fill-opacity="0.05" stroke="#5c6066" stroke-width="1"/>
+      <text x="458" y="517" fill="#5c6066" font-size="9" font-family="'Geist', system-ui, sans-serif">Public Onyx Leaderboard (full 511K corpus · official scorer)</text>
+
+      <text x="964" y="498" fill="#5c6066" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">SOURCE: HUGGINGFACE ONYX ENTERPRISERAG-BENCH LEADERBOARD</text>
+    </svg>

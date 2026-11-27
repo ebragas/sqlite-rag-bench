@@ -1,0 +1,15 @@
+{
+  "dataset_doc_uuid": "dsid_demo_confluence_01",
+  "title_field_name": "title",
+  "content_field_names": [
+    "body"
+  ],
+  "title": "Billing Ledger Postgres 16 Runbook",
+  "author": "dana",
+  "status": "final",
+  "updated_at": "2026-02-18T09:30:00Z",
+  "linked_jira": [
+    "OPS-404"
+  ],
+  "body": "The Billing Ledger cluster runs on Postgres 16 with synchronous standby replication and nightly checksum verification. Failover drills run on the first Tuesday of every month."
+}

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="onyx-categories-dark-title onyx-categories-dark-desc" id="onyx-categories-dark-root">
+      <title id="onyx-categories-dark-title">Onyx EnterpriseRAG-Bench paired ablation across 10 categories</title>
+      <desc id="onyx-categories-dark-desc">Horizontal dumbbell chart comparing single-pass keyword baseline l0-fts (78.9% overall) against promoted hybrid plus Link Graph profile prod (83.0% overall, +4.0%) across 100 stratified Onyx EnterpriseRAG-Bench questions (10 per category). Largest gains appear on Semantic (+17.7%) and Project-related (+11.4%).</desc>
+
+      <!-- Clean paper ground -->
+  <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #onyx-categories-dark-root { --color-paper:  #1e2124;
+      --color-ink:    #fafaf7;
+      --color-muted:  #a9adb2;
+      --color-accent: #6fb093;
+      --font-sans:    'Geist', system-ui, sans-serif;
+      --font-serif:   'Instrument Serif', serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace; }
+      #onyx-categories-dark-root { font-family: var(--font-sans); color: var(--color-ink); }</style>
+  </defs>
+      <rect width="100%" height="100%" fill="#1e2124"/>
+
+      <!-- Header summary band -->
+      <text x="220" y="30" fill="#9ba0a6" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">PAIRED ABLATION · 100 STRATIFIED ONYX QUESTIONS (10 / CATEGORY) · 0–100% COMPOSITE SCORE</text>
+
+      <!-- Vertical gridlines & domain floor axis -->
+      <line x1="220" y1="44" x2="220" y2="424" stroke="#fafaf7" stroke-opacity="0.22" stroke-width="1"/>
+      <line x1="360" y1="56" x2="360" y2="416" stroke="#fafaf7" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="500" y1="56" x2="500" y2="416" stroke="#fafaf7" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="640" y1="56" x2="640" y2="416" stroke="#fafaf7" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="780" y1="56" x2="780" y2="416" stroke="#fafaf7" stroke-opacity="0.08" stroke-width="0.8"/>
+      <line x1="920" y1="56" x2="920" y2="416" stroke="#fafaf7" stroke-opacity="0.08" stroke-width="0.8"/>
+
+      <!-- Bottom axis baseline -->
+      <line x1="220" y1="424" x2="920" y2="424" stroke="#fafaf7" stroke-opacity="0.22" stroke-width="1"/>
+
+      <!-- Tick labels & axis title -->
+      <text x="220" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">0%</text>
+      <text x="360" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">20%</text>
+      <text x="500" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">40%</text>
+      <text x="640" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">60%</text>
+      <text x="780" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">80%</text>
+      <text x="920" y="444" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">100%</text>
+      <text x="570" y="464" fill="#a9adb2" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em" text-anchor="middle">COMPOSITE SCORE (0.70 ANSWER + 0.30 CITATION F1)</text>
+
+      <!-- Dumbbell rows (ordered by signed gain: prod - l0-fts) -->
+      <!-- Semantic: L0 60% -> prod 77.7% -->
+      <line x1="640" y1="76" x2="764" y2="76" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="640" cy="76" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="764" cy="76" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="628" y="79" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">60.0%</text>
+      <text x="776" y="79" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">77.7% (+17.7)</text>
+      <text x="204" y="80" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Semantic</text>
+
+      <!-- Project-related: L0 74.4% -> prod 85.8% -->
+      <line x1="741" y1="112" x2="821" y2="112" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="741" cy="112" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="821" cy="112" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="729" y="115" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">74.4%</text>
+      <text x="833" y="115" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">85.8% (+11.4)</text>
+      <text x="204" y="116" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Project-related</text>
+
+      <!-- High-level*: L0 20% -> prod 30% -->
+      <line x1="360" y1="148" x2="430" y2="148" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="360" cy="148" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="430" cy="148" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="348" y="151" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">20.0%</text>
+      <text x="442" y="151" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">30.0% (+10.0)</text>
+      <text x="204" y="152" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">High-level*</text>
+
+      <!-- Constrained: L0 88.2% -> prod 92.1% -->
+      <line x1="837" y1="184" x2="865" y2="184" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="837" cy="184" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="865" cy="184" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="825" y="187" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">88.2%</text>
+      <text x="877" y="187" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">92.1% (+3.9)</text>
+      <text x="204" y="188" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Constrained</text>
+
+      <!-- Completeness: L0 60% -> prod 63.7% -->
+      <line x1="640" y1="220" x2="666" y2="220" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="640" cy="220" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="666" cy="220" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="628" y="223" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">60.0%</text>
+      <text x="678" y="223" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace">63.7% (+3.7)</text>
+      <text x="204" y="224" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Completeness</text>
+
+      <!-- Intra-doc reasoning: L0 97% -> prod 97% -->
+      <circle cx="899" cy="256" r="6.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="899" cy="256" r="3.5" fill="#6fb093"/>
+      <text x="887" y="259" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">97.0% (tie)</text>
+      <text x="204" y="260" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Intra-doc reasoning</text>
+
+      <!-- Info not found: L0 100% -> prod 100% -->
+      <circle cx="920" cy="292" r="6.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="920" cy="292" r="3.5" fill="#6fb093"/>
+      <text x="908" y="295" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">100.0% (tie)</text>
+      <text x="204" y="296" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Info not found</text>
+
+      <!-- Miscellaneous: L0 100% -> prod 100% -->
+      <circle cx="920" cy="328" r="6.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="920" cy="328" r="3.5" fill="#6fb093"/>
+      <text x="908" y="331" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">100.0% (tie)</text>
+      <text x="204" y="332" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Miscellaneous</text>
+
+      <!-- Basic: L0 100% -> prod 99% -->
+      <line x1="920" y1="364" x2="913" y2="364" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="920" cy="364" r="4.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.4"/>
+      <circle cx="913" cy="364" r="4.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="903" y="367" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">99.0% / 100.0% (-1.0)</text>
+      <text x="204" y="368" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Basic</text>
+
+      <!-- Conflicting info: L0 89.9% -> prod 84.6% -->
+      <line x1="849" y1="400" x2="812" y2="400" stroke="#fafaf7" stroke-opacity="0.45" stroke-width="1.2"/>
+      <circle cx="849" cy="400" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <circle cx="812" cy="400" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="800" y="403" fill="#fafaf7" font-size="8.5" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">84.6% (-5.3)</text>
+      <text x="861" y="403" fill="#a9adb2" font-size="8.5" font-family="'Geist Mono', ui-monospace, monospace">89.9%</text>
+      <text x="204" y="404" fill="#fafaf7" font-size="11" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="end">Conflicting info</text>
+
+      <!-- Legend & methodology strip -->
+      <line x1="36" y1="484" x2="964" y2="484" stroke="#fafaf7" stroke-opacity="0.12" stroke-width="0.8"/>
+      <text x="36" y="500" fill="#a9adb2" font-size="8" font-weight="500" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.16em">LEGEND</text>
+
+      <circle cx="44" cy="516" r="5.5" fill="#1e2124" stroke="#a9adb2" stroke-width="1.5"/>
+      <text x="58" y="520" fill="#a9adb2" font-size="9" font-family="'Geist', system-ui, sans-serif">l0-fts baseline (78.9% overall · 7.5% false abs.)</text>
+
+      <circle cx="348" cy="516" r="5.5" fill="#6fb093" stroke="#fafaf7" stroke-width="1"/>
+      <text x="362" y="520" fill="#a9adb2" font-size="9" font-family="'Geist', system-ui, sans-serif">prod hybrid + Link Graph (83.0% overall · +4.0% · 3.8% false abs.)</text>
+
+      <text x="964" y="500" fill="#a9adb2" font-size="7.5" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">ORDERED BY SIGNED GAIN (PROD − L0-FTS) · *EMPTY expected_doc_ids</text>
+    </svg>

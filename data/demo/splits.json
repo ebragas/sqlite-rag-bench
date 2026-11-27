@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "seed": 20261126,
+  "holdout_seed": 20261126,
+  "total_questions": 4,
+  "counts": {
+    "dev": {
+      "unanswerable": 1,
+      "single_doc": 2,
+      "two_doc": 1,
+      "multi_doc": 0
+    },
+    "val": {
+      "unanswerable": 0,
+      "single_doc": 0,
+      "two_doc": 0,
+      "multi_doc": 0
+    },
+    "holdout": {
+      "unanswerable": 0,
+      "single_doc": 0,
+      "two_doc": 0,
+      "multi_doc": 0
+    }
+  },
+  "dev": [
+    "demo_001",
+    "demo_002",
+    "demo_003",
+    "demo_004"
+  ],
+  "val": [],
+  "holdout": []
+}
